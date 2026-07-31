@@ -216,6 +216,7 @@ export default function Products() {
         columns={columns}
         rowCount={total}
         loading={loading}
+        // loading={setLoading}
         paginationMode="server"
         paginationModel={paginationModel}
         onPaginationModelChange={setPaginationModel}
