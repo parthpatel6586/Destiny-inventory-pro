@@ -1,15 +1,15 @@
 import Inter from "../public/static/fonts/Inter.ttf";
-import { ThemeProvider, CssBaseline, createTheme, Box } from "@mui/material";
+import { ThemeProvider, CssBaseline, createTheme } from "@mui/material";
 import RootComponent from "./components/RootComponent";
-// import RootPage from "./components/RootPage";
-import DataTable from "./test/DataTable";
-import Hello from "./test/Hello";
-// import "../app.css";
+import Login from "./components/Login";
+import ProtectedRoute from "./components/ProtectedRoute";
+import { AuthProvider } from "./context/AuthContext";
 import {
   Route,
   createBrowserRouter,
   createRoutesFromElements,
   RouterProvider,
+  Navigate,
 } from "react-router-dom";
 import Home from "./components/bodyComponents/home/Home";
 import Inventory from "./components/bodyComponents/inventory/Inventory";
@@ -19,29 +19,13 @@ import Growth from "./components/bodyComponents/growth/Growth";
 import Report from "./components/bodyComponents/report/Report";
 import Setting from "./components/bodyComponents/Settings/Setting";
 import Order from "./components/bodyComponents/order/Order";
-import OrderModal from "./components/bodyComponents/order/OrderModal";
-// in this project i want change name to Destiny inventory pro with all features working with globel api and all inventory features live working with products customers inventory  orders and all field live working with name Destiny inventory pro with best admin panel and working ui all crud and all features of the inventorymanagement all pagination and search all working with api you can use inventory or fakestore api develop maintainable globel admin panel for Destiny inventory pro
+
 function App() {
   const theme = createTheme({
     spacing: 4,
     palette: {
       mode: "light",
-
-      // primary: {
-      //   main: "#573BFE",
-      // },
-      // text: {
-      //   primary: "#202635",
-      //   secondary: "#A0AEC0",
-      // },
-      // secondary: {
-      //   main: "#01C0F6",
-      // },
-      // error: {
-      //   main: "#E03137",
-      // },
     },
-
     typography: {
       fontFamily: "Inter",
     },
@@ -59,28 +43,40 @@ function App() {
         `,
       },
     },
-    //here we customize our typographi and in the variant prop we can use out myVar value
   });
+
   const router = createBrowserRouter(
     createRoutesFromElements(
-      <Route path="/" element={<RootComponent />}>
-        {/* <Route index element={<RootPage />} /> */}
-        <Route path="/home" element={<Home />}></Route>
-        <Route path="/inventory" element={<Inventory />}></Route>
-        <Route path="/orders" element={<Order />}></Route>
-        <Route path="/customers" element={<Customer />}></Route>
-        <Route path="/revenue" element={<Revenue />}></Route>
-        <Route path="/growth" element={<Growth />}></Route>
-        <Route path="/reports" element={<Report />}></Route>
-        <Route path="/settings" element={<Setting />}></Route>
-      </Route>
+      <>
+        <Route path="/login" element={<Login />} />
+
+        {/* Protected Dashboard Routes */}
+        <Route element={<ProtectedRoute />}>
+          <Route path="/" element={<RootComponent />}>
+            <Route index element={<Navigate to="/home" replace />} />
+            <Route path="home" element={<Home />} />
+            <Route path="inventory" element={<Inventory />} />
+            <Route path="orders" element={<Order />} />
+            <Route path="customers" element={<Customer />} />
+            <Route path="revenue" element={<Revenue />} />
+            <Route path="growth" element={<Growth />} />
+            <Route path="reports" element={<Report />} />
+            <Route path="settings" element={<Setting />} />
+          </Route>
+        </Route>
+
+        {/* Fallback route */}
+        <Route path="*" element={<Navigate to="/home" replace />} />
+      </>
     )
   );
 
   return (
     <ThemeProvider theme={theme}>
-      <RouterProvider router={router} />
-      <CssBaseline />
+      <AuthProvider>
+        <RouterProvider router={router} />
+        <CssBaseline />
+      </AuthProvider>
     </ThemeProvider>
   );
 }

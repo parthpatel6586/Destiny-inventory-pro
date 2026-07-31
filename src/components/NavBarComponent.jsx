@@ -21,13 +21,19 @@ import {
   AccountCircleOutlined,
 } from "@mui/icons-material";
 import { useState } from "react";
+import { useAuth } from "../context/AuthContext";
+import { useNavigate } from "react-router-dom";
 
 export default function NavBarComponent() {
+  const { user, logout } = useAuth();
+  const navigate = useNavigate();
+
   const [notificationAnchorEl, setNotificationAnchorEl] = useState(null);
   const [anchorEl, setAnchorEl] = useState(null);
-  // handleNotificationClicked
+  
   const open = Boolean(anchorEl);
   const notificationOpen = Boolean(notificationAnchorEl);
+
   const handleAvatarClicked = (event) => {
     setAnchorEl(event.currentTarget);
   };
@@ -41,6 +47,18 @@ export default function NavBarComponent() {
   const notificationHandleClose = () => {
     setNotificationAnchorEl(null);
   };
+
+  const handleLogout = () => {
+    handleClose();
+    logout();
+    navigate("/login");
+  };
+
+  const displayName = user
+    ? `${user.firstName || ""} ${user.lastName || ""}`.trim() || user.username || user.email
+    : "ADMIN DESTINY";
+  
+  const userInitial = user?.firstName?.[0] || user?.username?.[0] || user?.email?.[0] || "P";
 
   return (
     <Grid container>
@@ -58,7 +76,7 @@ export default function NavBarComponent() {
                 <Typography
                   variant="h6"
                   component="a"
-                  href="/"
+                  href="/home"
                   sx={{
                     mx: 2,
                     display: { xs: "none", md: "flex" },
@@ -86,28 +104,25 @@ export default function NavBarComponent() {
                       />
                     </Badge>
                   </IconButton>
-                  <Menu
-                    open={notificationOpen}
-                    anchorEl={notificationAnchorEl}
-                    onClick={notificationHandleClose}
-                    onClose={notificationHandleClose}
-                  >
-                    {/* <MenuItem>Notification number 1 </MenuItem>
-                    <Divider />
-                    <MenuItem>Notification number 2</MenuItem>
-                    <MenuItem>Notification number 3</MenuItem> */}
-                  </Menu>
+
                   <IconButton
                     onClick={handleAvatarClicked}
                     size="small"
                     sx={{ mx: 2 }}
                     aria-haspopup="true"
                   >
-                    <Tooltip title="account settings">
-                      <Avatar sx={{ width: 32, height: 32 }}>Z</Avatar>
+                    <Tooltip title="Account settings">
+                      <Avatar
+                        src={user?.image || undefined}
+                        sx={{ width: 36, height: 36, bgcolor: "secondary.main" }}
+                      >
+                        {userInitial.toUpperCase()}
+                      </Avatar>
                     </Tooltip>
                   </IconButton>
-                  <Typography fontFamily={"Inter"}>ADMIN DESTINY</Typography>
+                  <Typography fontFamily={"Inter"} fontWeight="600">
+                    {displayName}
+                  </Typography>
                 </Box>
 
                 <Menu
@@ -115,24 +130,40 @@ export default function NavBarComponent() {
                   anchorEl={anchorEl}
                   onClick={handleClose}
                   onClose={handleClose}
+                  PaperProps={{
+                    elevation: 3,
+                    sx: { minWidth: 200, mt: 1 },
+                  }}
                 >
-                  <MenuItem>
+                  {user && (
+                    <Box sx={{ px: 2, py: 1 }}>
+                      <Typography variant="subtitle2" fontWeight="700">
+                        {displayName}
+                      </Typography>
+                      <Typography variant="caption" color="text.secondary">
+                        {user.email || user.username}
+                      </Typography>
+                    </Box>
+                  )}
+                  <Divider />
+
+                  <MenuItem onClick={handleClose}>
                     <ListItemIcon>
                       <AccountCircleOutlined fontSize="small" />
                     </ListItemIcon>
                     Profile
                   </MenuItem>
-                  <Divider />
 
-                  <MenuItem>
+                  <MenuItem onClick={handleClose}>
                     <ListItemIcon>
                       <Settings fontSize="small" />
                     </ListItemIcon>
                     Settings
                   </MenuItem>
-                  <MenuItem>
+                  <Divider />
+                  <MenuItem onClick={handleLogout} sx={{ color: "error.main" }}>
                     <ListItemIcon>
-                      <Logout fontSize="small" />
+                      <Logout fontSize="small" color="error" />
                     </ListItemIcon>
                     Logout
                   </MenuItem>
@@ -144,33 +175,4 @@ export default function NavBarComponent() {
       </Grid>
     </Grid>
   );
-}
-
-{
-  /* <Grid item md={7}>
-                  <Paper
-                    component="form"
-                    sx={{
-                      p: "2px 4px",
-                      width: "50%",
-                      mx: "auto",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                    }}
-                  >
-                    <InputBase
-                      sx={{ ml: 1, flex: 1 }}
-                      placeholder="Search "
-                      inputProps={{ "aria-label": "search" }}
-                    />
-                    <IconButton
-                      type="button"
-                      sx={{ p: "10px" }}
-                      aria-label="search"
-                    >
-                      <Search />
-                    </IconButton>
-                  </Paper>
-                </Grid> */
 }

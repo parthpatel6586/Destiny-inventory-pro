@@ -208,7 +208,7 @@ export default function Products() {
         <Button variant="contained" startIcon={<Add />} onClick={handleOpenAdd}>
           Add Product
         </Button>
-      </Box>
+        </Box>
 
       <DataGrid
         sx={{ borderLeft: 0, borderRight: 0, borderRadius: 0, minHeight: 400 }}
@@ -220,7 +220,7 @@ export default function Products() {
         paginationModel={paginationModel}
         onPaginationModelChange={setPaginationModel}
         pageSizeOptions={[5, 10, 20]}
-        checkboxSelection
+        // checkboxSelection
         disableRowSelectionOnClick
       />
 
